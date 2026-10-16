@@ -1,0 +1,19 @@
+{
+  "appId": "com.parsagames.amiralmomenincalendar",
+  "appName": "تقویم شیعه امیرالمومنین",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true,
+    "allowNavigation": [
+      "cdn.imgurl.ir",
+      "corsproxy.io",
+      "api.github.com",
+      "gist.githubusercontent.com",
+      "raw.githubusercontent.com",
+      "nominatim.openstreetmap.org",
+      "api.aladhan.com",
+      "*.supabase.co"
+    ]
+  }
+}
