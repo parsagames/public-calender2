@@ -220,11 +220,98 @@ def patch_manifest():
                 '            </intent-filter>\n'
                 '        </receiver>\n')
         text = text.replace('</application>', comp + '    </application>')
-    if 'CalendarWidget' not in text and '</application>' in text:
+    need = [os.path.join('android','app','src','main','res',d,n) for d,n in
+            (('xml','calendar_widget_info.xml'),('layout','widget_calendar.xml'),
+             ('drawable','widget_bg.xml'),('values','widget_strings.xml'))]
+    widget_ok = all(os.path.isfile(x) for x in need) and os.path.isfile(
+        os.path.join('android','app','src','main','java','com','parsagames','amiralmomenincalendar','CalendarWidget.java'))
+    if not widget_ok:
+        print('WARNING: widget files missing in native/ -> widget skipped. missing:',
+              [x for x in need if not os.path.isfile(x)])
+    if widget_ok and 'CalendarWidget' not in text and '</application>' in text:
         wid = ('        <receiver android:name=".CalendarWidget" android:exported="true">\n'
                '            <intent-filter>\n'
                '                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />\n'
                '                <action android:name="android.intent.action.DATE_CHANGED" />\n'
+               '                <action android:name="android.intent.action.TIME_SET" />\n'
+               '                <action android:name="android.intent.action.TIMEZONE_CHANGED" />\n'
+               '            </intent-filter>\n'
+               '            <meta-data android:name="android.appwidget.provider" '
+               'android:resource="@xml/calendar_widget_info" />\n'
+               '        </receiver>\n')
+        text = text.replace('</application>', wid + '    </application>')
+    if 'android.hardware.location.gps' not in text:
+        add.append('    <uses-feature android:name="android.hardware.location.gps" android:required="false" />')
+    if add and '</manifest>' in text:
+        text = text.replace('</manifest>', '\n'.join(add) + '\n</manifest>')
+        with open(MANIFEST, 'w', encoding='utf-8') as f:
+            f.write(text)
+    print('manifest: added %d line(s)' % len(add))
+
+
+def patch_version():
+    run = os.environ.get('GITHUB_RUN_NUMBER')
+    path = os.path.join('android', 'app', 'build.gradle')
+    if not (run and run.isdigit() and os.path.isfile(path)):
+        return
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    new = re.sub(r'versionCode\s+\d+', 'versionCode ' + run, text, count=1)
+    new = re.sub(r'versionName\s+"[^"]*"', 'versionName "1.0.%s"' % run, new, count=1)
+    if new != text:
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(new)
+    print('versionCode =', run)
+
+
+def install_native():
+    """native adhan alarm: Java files + MainActivity that registers the plugin"""
+    src = os.path.join(ROOT, 'native')
+    pkg = 'com.parsagames.amiralmomenincalendar'
+    dest = os.path.join('android', 'app', 'src', 'main', 'java', *pkg.split('.'))
+    if not os.path.isdir(src) or not os.path.isdir(os.path.join('android', 'app', 'src', 'main')):
+        print('WARNING: native adhan files skipped')
+        return
+    os.makedirs(dest, exist_ok=True)
+    for f in glob.glob(os.path.join(src, '*.java')):
+        shutil.copy(f, dest)
+    # res files are stored flat in native/ as  <folder>__<name>  (e.g. layout__widget_calendar.xml)
+    for f in glob.glob(os.path.join(src, '*__*')):
+        folder, name = os.path.basename(f).split('__', 1)
+        rdir = os.path.join('android', 'app', 'src', 'main', 'res', folder)
+        os.makedirs(rdir, exist_ok=True)
+        shutil.copy(f, os.path.join(rdir, name))
+        print('  res copied:', folder + '/' + name)
+    with open(os.path.join(dest, 'MainActivity.java'), 'w', encoding='utf-8') as f:
+        f.write('package %s;\n\nimport android.os.Bundle;\nimport com.getcapacitor.BridgeActivity;\n\n'
+                'public class MainActivity extends BridgeActivity {\n'
+                '    @Override\n    public void onCreate(Bundle savedInstanceState) {\n'
+                '        registerPlugin(AdhanPlugin.class);\n'
+                '        super.onCreate(savedInstanceState);\n    }\n}\n' % pkg)
+    print('native adhan files installed in', dest)
+
+
+def prepare_android():
+    install_native()
+    master = build_icon_master()
+    if master is not None:
+        make_icons(master)
+        make_splash(master)
+    patch_manifest()
+    patch_version()
+
+
+if __name__ == '__main__':
+    cmd = sys.argv[1] if len(sys.argv) > 1 else ''
+    if cmd == 'web':
+        prepare_web()
+    elif cmd == 'android':
+        prepare_android()
+    elif cmd == 'sdk':
+        ensure_sdk()
+    else:
+        sys.exit(__doc__)
+action.DATE_CHANGED" />\n'
                '                <action android:name="android.intent.action.TIME_SET" />\n'
                '                <action android:name="android.intent.action.TIMEZONE_CHANGED" />\n'
                '            </intent-filter>\n'
