@@ -229,7 +229,7 @@ def patch_manifest():
             (('xml','calendar_widget_info.xml'),('layout','widget_calendar.xml'),
              ('drawable','widget_bg.xml'),('values','widget_strings.xml'))]
     widget_ok = all(os.path.isfile(x) for x in need) and os.path.isfile(
-        os.path.join('android','app','src','main','java','com','parsagames','amiralmomenincalendar','CalendarWidget.java'))
+        os.path.join('android','app','src','main','java','com','parsagames','shiacalendar','amiralmomenin','CalendarWidget.java'))
     if not widget_ok:
         print('WARNING: widget files missing in native/ -> widget skipped. missing:',
               [x for x in need if not os.path.isfile(x)])
@@ -246,7 +246,7 @@ def patch_manifest():
                '        </receiver>\n')
         text = text.replace('</application>', wid + '    </application>')
     if 'WidgetConfigActivity' not in text and '</application>' in text and os.path.isfile(
-            os.path.join('android','app','src','main','java','com','parsagames','amiralmomenincalendar','WidgetConfigActivity.java')):
+            os.path.join('android','app','src','main','java','com','parsagames','shiacalendar','amiralmomenin','WidgetConfigActivity.java')):
         cfg = ('        <activity android:name=".WidgetConfigActivity" android:exported="true" '
                'android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">\n'
                '            <intent-filter>\n'
@@ -281,7 +281,7 @@ def patch_version():
 def install_native():
     """native adhan alarm: Java files + MainActivity that registers the plugin"""
     src = os.path.join(ROOT, 'native')
-    pkg = 'com.parsagames.amiralmomenincalendar'
+    pkg = 'com.parsagames.shiacalendar.amiralmomenin'
     dest = os.path.join('android', 'app', 'src', 'main', 'java', *pkg.split('.'))
     if not os.path.isdir(src) or not os.path.isdir(os.path.join('android', 'app', 'src', 'main')):
         print('WARNING: native adhan files skipped')

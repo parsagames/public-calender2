@@ -12,7 +12,7 @@
 /* ===== به‌روزرسانی از راه دور (فقط نسخهٔ عمومی، فقط داخل اپ) =====
    APP_VERSION را هر بار که فایل جدید روی سرور می‌گذاریم یکی بالا می‌بریم. */
 var OTA_ON = true;
-var APP_VERSION = 36;
+var APP_VERSION = 37;
 (function(){
   try{
     if(!OTA_ON) return;
@@ -3714,13 +3714,19 @@ var APP_VERSION = 36;
     if(!arr.length){
       h += '<div class="occx-none">برای این روز در کتاب توضیحی نیامده است.</div>';
     } else {
-      arr.forEach(function(e){
-        h += '<div class="occx-entry"><h3>' + occEsc(e[0].replace(/\d/g, function(d){ return '۰۱۲۳۴۵۶۷۸۹'.charAt(d); })) + '</h3>' +
+      var mk = function(e){
+        return '<div class="occx-entry"><h3>' + occEsc(e[0].replace(/\d/g, function(d){ return '۰۱۲۳۴۵۶۷۸۹'.charAt(d); })) + '</h3>' +
              e[1].map(function(p){ return '<p>' + occEsc(p) + '</p>'; }).join('') + '</div>';
-      });
+      };
+      /* اولین توضیح فوراً، بقیه کمی بعد (برای روان‌بودن در گوشی‌های کند) */
+      h += mk(arr[0]);
+      if(arr.length > 1){
+        var rest = arr.slice(1).map(mk).join(''), tok = occSel;
+        setTimeout(function(){ if(occSel === tok){ var bd = document.getElementById('occBody'); if(bd) bd.insertAdjacentHTML('beforeend', rest); } }, 60);
+      }
     }
-    document.getElementById('occBody').innerHTML = h;
     var v = document.getElementById('occView'); if(v) v.scrollTop = 0;
+    document.getElementById('occBody').innerHTML = h;
   }
   (function(){
     var panel = document.getElementById('occGotoPanel'), yEl = document.getElementById('occGotoYear'),
