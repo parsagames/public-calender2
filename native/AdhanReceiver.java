@@ -1,4 +1,4 @@
-package com.parsagames.amiralmomenincalendar;
+package com.parsagames.shiacalendar.amiralmomenin;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -38,6 +38,8 @@ public class AdhanReceiver extends BroadcastReceiver {
             AdhanScheduler.scheduleAll(context);
             DateNotifier.refresh(context);
             CalendarWidget.updateAll(context);
+        } else if (AnnounceNotifier.ACTION_POLL.equals(action)) {
+            AnnounceNotifier.onAlarm(context, goAsync());
         } else if (DateNotifier.ACTION_TICK.equals(action) || DateNotifier.ACTION_DISMISSED.equals(action)) {
             DateNotifier.refresh(context);
             if (DateNotifier.ACTION_TICK.equals(action)) CalendarWidget.updateAll(context);

@@ -1,4 +1,4 @@
-package com.parsagames.amiralmomenincalendar;
+package com.parsagames.shiacalendar.amiralmomenin;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -26,7 +26,7 @@ import java.util.Locale;
  * فایل: {"id":1,"active":true,"title":"عنوان","text":"متن","expires":"2027-01-30"}
  */
 public class AnnounceNotifier {
-    static final String ACTION_POLL = "com.parsagames.amiralmomenincalendar.PUSH_POLL";
+    static final String ACTION_POLL = "com.parsagames.shiacalendar.amiralmomenin.PUSH_POLL";
     static final String CHANNEL = "push_channel";
     static final int NOTIF_ID = 4128;
     static final String SUPABASE = "https://chhsridbkvmqrkhzdszc.supabase.co";

@@ -1,4 +1,4 @@
-package com.parsagames.amiralmomenincalendar;
+package com.parsagames.shiacalendar.amiralmomenin;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;

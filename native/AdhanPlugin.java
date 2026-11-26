@@ -1,4 +1,4 @@
-package com.parsagames.amiralmomenincalendar;
+package com.parsagames.shiacalendar.amiralmomenin;
 
 import android.Manifest;
 import android.app.NotificationManager;

@@ -1,4 +1,4 @@
-package com.parsagames.amiralmomenincalendar;
+package com.parsagames.shiacalendar.amiralmomenin;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class AdhanScheduler {
     static final String PREFS = "adhan_native";
-    static final String ACTION_ALARM = "com.parsagames.amiralmomenincalendar.ADHAN_ALARM";
+    static final String ACTION_ALARM = "com.parsagames.shiacalendar.amiralmomenin.ADHAN_ALARM";
     static final int MAX_ID = 100;
 
     /** گزارش کوتاه برای عیب‌یابی (۸ خط آخر) */

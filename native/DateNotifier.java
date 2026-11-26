@@ -1,4 +1,4 @@
-package com.parsagames.amiralmomenincalendar;
+package com.parsagames.shiacalendar.amiralmomenin;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -21,8 +21,8 @@ import java.util.Locale;
 /** اعلان همیشگی تاریخ (شمسی، قمری، میلادی) — با تغییر روز خودکار به‌روز می‌شود. */
 public class DateNotifier {
     static final String CHANNEL = "date_channel";
-    static final String ACTION_TICK = "com.parsagames.amiralmomenincalendar.DATE_TICK";
-    static final String ACTION_DISMISSED = "com.parsagames.amiralmomenincalendar.DATE_DISMISSED";
+    static final String ACTION_TICK = "com.parsagames.shiacalendar.amiralmomenin.DATE_TICK";
+    static final String ACTION_DISMISSED = "com.parsagames.shiacalendar.amiralmomenin.DATE_DISMISSED";
     static final int NOTIF_ID = 4127;
 
     static void refresh(Context context) {
@@ -103,7 +103,7 @@ public class DateNotifier {
 
     private static RemoteViews card(Context context, String title, String sub, String dayNum, String occ) {
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.notif_date);
-        // تم اعلان: جدا از تم برنامه (پیش‌فرض: مثل برنامه)
+        // تم اعلان = تم انتخاب‌شده در برنامه
         ThemeColors.T th = ThemeColors.get(context, ThemeColors.notifThemeId(context));
         int bg = ThemeColors.drawableId(context, "notif_bg", th.id);
         if (bg != 0) rv.setInt(R.id.n_root, "setBackgroundResource", bg);
@@ -122,7 +122,7 @@ public class DateNotifier {
         return rv;
     }
 
-    /** شب بعد از ۰۰:۰۰ دوباره اجرا می‌شود تا تاریخ عوض شود */
+    /** نوبت بعدی: نیمه‌شب (برای عوض شدن تاریخ) یا حداکثر ۴۰ دقیقه بعد (برای برگرداندن اعلان در صورت پاک شدن) */
     static void scheduleNextTick(Context context) {
         try {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -133,13 +133,18 @@ public class DateNotifier {
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 20);
             c.set(Calendar.MILLISECOND, 0);
+            long at = Math.min(c.getTimeInMillis(), System.currentTimeMillis() + 40L * 60L * 1000L);
             Intent i = new Intent(context, AdhanReceiver.class).setAction(ACTION_TICK);
             PendingIntent pi = PendingIntent.getBroadcast(context, 14, i,
                     PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
             if (Build.VERSION.SDK_INT >= 23) {
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+                try {
+                    am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                } catch (SecurityException se) {
+                    am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                }
             } else {
-                am.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+                am.set(AlarmManager.RTC_WAKEUP, at, pi);
             }
         } catch (Exception e) {
             // ignore

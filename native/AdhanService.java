@@ -1,4 +1,4 @@
-package com.parsagames.amiralmomenincalendar;
+package com.parsagames.shiacalendar.amiralmomenin;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -21,8 +21,8 @@ import android.widget.RemoteViews;
 import java.io.File;
 
 public class AdhanService extends Service {
-    static final String ACTION_PLAY = "com.parsagames.amiralmomenincalendar.ADHAN_PLAY";
-    static final String ACTION_STOP = "com.parsagames.amiralmomenincalendar.ADHAN_STOP";
+    static final String ACTION_PLAY = "com.parsagames.shiacalendar.amiralmomenin.ADHAN_PLAY";
+    static final String ACTION_STOP = "com.parsagames.shiacalendar.amiralmomenin.ADHAN_STOP";
     static final String CHANNEL = "adhan_channel";
     static final int NOTIF_ID = 7731;
 
